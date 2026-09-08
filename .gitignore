@@ -1,0 +1,14 @@
+# Environment
+.env
+
+# Logs
+storage/logs/*.log
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Composer (once real composer install is run, vendor/ gets regenerated —
+# keep our bootstrap autoload.php tracked until then; remove this line
+# and the vendor/ contents once PHPMailer/Dompdf are added via Composer)
