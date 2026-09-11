@@ -35,4 +35,23 @@ class User extends Model
     {
         return trim($user['first_name'] . ' ' . $user['last_name']);
     }
+
+    /**
+     * All admin and super_admin accounts, most recently created first
+     * (Super Admin only — see AdminUserController).
+     */
+    public function allAdmins(): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT * FROM {$this->table} WHERE role IN ('admin', 'super_admin') ORDER BY created_at DESC"
+        );
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function setActive(int $userId, bool $isActive): bool
+    {
+        $stmt = $this->db->prepare("UPDATE {$this->table} SET is_active = :active WHERE id = :id");
+        return $stmt->execute(['active' => $isActive ? 1 : 0, 'id' => $userId]);
+    }
 }

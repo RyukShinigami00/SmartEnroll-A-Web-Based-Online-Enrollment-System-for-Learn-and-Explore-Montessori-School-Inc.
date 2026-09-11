@@ -48,18 +48,36 @@ class EnrollmentApplication extends Model
 
     /**
      * All applications for admin review, optionally filtered by status,
-     * most recent first, with the applicant's account email attached.
+     * grade level, and/or a search term (matched against student or
+     * parent name), most recent first, with the applicant's account
+     * email attached.
      */
-    public function allForAdmin(?string $status = null): array
+    public function allForAdmin(?string $status = null, ?string $gradeLevel = null, ?string $search = null): array
     {
         $sql = "SELECT ea.*, u.email AS applicant_email
                 FROM {$this->table} ea
                 LEFT JOIN users u ON u.id = ea.submitted_by_user_id";
+        $conditions = [];
         $params = [];
 
         if ($status !== null) {
-            $sql .= " WHERE ea.status = :status";
+            $conditions[] = "ea.status = :status";
             $params['status'] = $status;
+        }
+
+        if ($gradeLevel !== null) {
+            $conditions[] = "ea.grade_level = :grade_level";
+            $params['grade_level'] = $gradeLevel;
+        }
+
+        if ($search !== null && $search !== '') {
+            $conditions[] = "(ea.student_name LIKE :search1 OR ea.parent_name LIKE :search2)";
+            $params['search1'] = '%' . $search . '%';
+            $params['search2'] = '%' . $search . '%';
+        }
+
+        if (!empty($conditions)) {
+            $sql .= " WHERE " . implode(' AND ', $conditions);
         }
 
         $sql .= " ORDER BY ea.created_at DESC";

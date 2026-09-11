@@ -6,6 +6,8 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Config\Env;
 use App\Controllers\AdminEnrollmentController;
+use App\Controllers\AdminUserController;
+use App\Controllers\AuditLogController;
 use App\Controllers\AuthController;
 use App\Controllers\DashboardController;
 use App\Controllers\EnrollmentController;
@@ -51,5 +53,11 @@ $router->post('/admin/applications/{id}/reject', [AdminEnrollmentController::cla
 // Admin: section management
 $router->get('/admin/sections', [SectionController::class, 'index']);
 $router->post('/admin/sections', [SectionController::class, 'store']);
+
+// Super Admin only: audit log and admin account management
+$router->get('/admin/audit-log', [AuditLogController::class, 'index']);
+$router->get('/admin/users', [AdminUserController::class, 'index']);
+$router->post('/admin/users', [AdminUserController::class, 'store']);
+$router->post('/admin/users/{id}/toggle', [AdminUserController::class, 'toggleActive']);
 
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

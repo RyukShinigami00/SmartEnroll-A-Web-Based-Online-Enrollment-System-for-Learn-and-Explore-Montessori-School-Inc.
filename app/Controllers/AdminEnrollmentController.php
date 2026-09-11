@@ -22,6 +22,9 @@ class AdminEnrollmentController extends Controller
         $this->sectionModel = new Section();
     }
 
+    /** Grade levels currently offered — keep in sync with sections.grade_level values. */
+    private const GRADE_LEVELS = ['Toddler', 'Primary'];
+
     public function index(): void
     {
         Auth::requireRole(['admin', 'super_admin']);
@@ -29,11 +32,19 @@ class AdminEnrollmentController extends Controller
         $status = $this->input('status'); // null, 'pending', 'approved', or 'rejected'
         $status = in_array($status, ['pending', 'approved', 'rejected'], true) ? $status : null;
 
-        $applications = $this->applicationModel->allForAdmin($status);
+        $gradeLevel = $this->input('grade_level');
+        $gradeLevel = in_array($gradeLevel, self::GRADE_LEVELS, true) ? $gradeLevel : null;
+
+        $search = trim((string) $this->input('search', ''));
+
+        $applications = $this->applicationModel->allForAdmin($status, $gradeLevel, $search !== '' ? $search : null);
 
         $this->view('admin/applications-index', [
             'applications' => $applications,
             'activeStatus' => $status ?? 'all',
+            'activeGrade'  => $gradeLevel ?? '',
+            'search'       => $search,
+            'gradeLevels'  => self::GRADE_LEVELS,
             'success'      => Session::flash('success'),
             'error'        => Session::flash('error'),
         ]);
