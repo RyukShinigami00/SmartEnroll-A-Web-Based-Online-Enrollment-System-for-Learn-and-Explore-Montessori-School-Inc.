@@ -32,9 +32,6 @@ $router->post('/login', [AuthController::class, 'login']);
 $router->get('/register', [AuthController::class, 'showRegister']);
 $router->post('/register', [AuthController::class, 'register']);
 $router->get('/logout', [AuthController::class, 'logout']);
-$router->get('/verify-email', [AuthController::class, 'showVerifyEmail']);
-$router->post('/verify-email', [AuthController::class, 'verifyEmail']);
-$router->post('/resend-verification', [AuthController::class, 'resendVerification']);
 
 // Dashboards (role-gated inside the controller via Auth middleware)
 $router->get('/dashboard', [DashboardController::class, 'student']);

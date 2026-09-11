@@ -22,15 +22,6 @@
             <button type="submit">Log In</button>
         </form>
 
-        <details class="resend-details">
-            <summary>Need to verify your email?</summary>
-            <form method="POST" action="/resend-verification" class="resend-form">
-                <label for="resend_email">Email</label>
-                <input type="email" id="resend_email" name="email" required>
-                <button type="submit" class="btn-clay-ghost-small">Send verification code</button>
-            </form>
-        </details>
-
         <p class="auth-footnote">Don't have an account? <a href="/register">Register here</a></p>
     </div>
 

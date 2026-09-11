@@ -2,9 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Config\Env;
 use App\Core\Controller;
-use App\Helpers\Mailer;
 use App\Helpers\Session;
 use App\Models\AuditLog;
 use App\Models\User;
@@ -67,28 +65,13 @@ class AuthController extends Controller
         }
 
         // Public self-registration is always role=student.
-        // Admin/Super Admin accounts are provisioned by a Super Admin (Sprint 2).
+        // Admin/Super Admin accounts are provisioned by a Super Admin.
         $userId = $this->userModel->createUser($firstName, $lastName, $email, $password, 'student');
-        $code   = $this->userModel->setVerificationCode($userId);
 
         (new AuditLog())->record($userId, 'user_registered', 'users', $userId);
 
-        $sent = Mailer::send(
-            $email,
-            $firstName,
-            'Your SmartEnroll verification code',
-            Mailer::verificationCodeEmail($firstName, $code)
-        );
-
-        // Remember who we're verifying so the code-entry page can pick it up
-        // without exposing the address in a URL.
-        Session::put('pending_verification_email', $email);
-
-        if (!$sent) {
-            Session::flash('error', "Account created, but we couldn't send the verification code right now. Use \"Resend code\" below once mail is configured.");
-        }
-
-        $this->redirect('/verify-email');
+        $user = $this->userModel->find($userId);
+        $this->logUserIn($user);
     }
 
     public function showLogin(): void
@@ -116,12 +99,6 @@ class AuthController extends Controller
             $this->redirect('/login');
         }
 
-        if (!$this->userModel->isEmailVerified($user)) {
-            Session::put('pending_verification_email', $email);
-            Session::flash('error', 'Please verify your email before logging in. Enter the code below, or resend a new one.');
-            $this->redirect('/verify-email');
-        }
-
         $this->logUserIn($user);
     }
 
@@ -136,68 +113,9 @@ class AuthController extends Controller
         exit;
     }
 
-    public function showVerifyEmail(): void
-    {
-        $this->view('auth/verify', [
-            'error'   => Session::flash('error'),
-            'success' => Session::flash('success'),
-            'email'   => Session::get('pending_verification_email', ''),
-        ]);
-    }
-
-    public function verifyEmail(): void
-    {
-        $email = trim(strtolower((string) $this->input('email')));
-        $code  = User::normalizeVerificationCode((string) $this->input('code'));
-
-        if ($email === '' || !preg_match('/^\d{6}$/', $code)) {
-            Session::flash('error', 'Please enter the 6-digit code sent to your email.');
-            $this->redirect('/verify-email');
-        }
-
-        $user = $this->userModel->findByEmailAndValidCode($email, $code);
-
-        if (!$user) {
-            Session::flash('error', 'That code is invalid or has expired. Request a new one below.');
-            Session::put('pending_verification_email', $email);
-            $this->redirect('/verify-email');
-        }
-
-        $this->userModel->markEmailVerified((int) $user['id']);
-        (new AuditLog())->record((int) $user['id'], 'email_verified', 'users', (int) $user['id']);
-        Session::forget('pending_verification_email');
-
-        // Verified — log them straight in, no separate login step.
-        $this->logUserIn($user);
-    }
-
-    public function resendVerification(): void
-    {
-        $email = trim(strtolower((string) $this->input('email')));
-        $user  = $email !== '' ? $this->userModel->findByEmail($email) : false;
-
-        // Always show the same message, whether or not the email exists,
-        // to avoid leaking which addresses are registered.
-        $genericMessage = "If that email exists and isn't verified yet, we've sent a new code.";
-
-        if ($user && !$this->userModel->isEmailVerified($user)) {
-            $code = $this->userModel->setVerificationCode((int) $user['id']);
-            Mailer::send(
-                $email,
-                $user['first_name'],
-                'Your SmartEnroll verification code',
-                Mailer::verificationCodeEmail($user['first_name'], $code)
-            );
-        }
-
-        Session::put('pending_verification_email', $email);
-        Session::flash('success', $genericMessage);
-        $this->redirect('/verify-email');
-    }
-
     /**
-     * Shared "establish session + role-based redirect" step used by both
-     * a normal password login and a just-completed email verification.
+     * Shared "establish session + role-based redirect" step used after
+     * either a successful registration or a normal password login.
      */
     private function logUserIn(array $user): void
     {
