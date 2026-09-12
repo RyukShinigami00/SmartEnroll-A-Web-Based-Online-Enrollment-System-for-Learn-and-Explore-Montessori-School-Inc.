@@ -12,6 +12,7 @@ use App\Controllers\AuthController;
 use App\Controllers\DashboardController;
 use App\Controllers\EnrollmentController;
 use App\Controllers\HomeController;
+use App\Controllers\ScheduleController;
 use App\Controllers\SectionController;
 use App\Core\Router;
 use App\Helpers\Session;
@@ -56,6 +57,13 @@ $router->post('/admin/sections', [SectionController::class, 'store']);
 $router->get('/admin/sections/{id}/edit', [SectionController::class, 'edit']);
 $router->post('/admin/sections/{id}', [SectionController::class, 'update']);
 $router->post('/admin/sections/{id}/delete', [SectionController::class, 'destroy']);
+
+// Admin: schedule management
+$router->get('/admin/schedule', [ScheduleController::class, 'index']);
+$router->post('/admin/schedule', [ScheduleController::class, 'store']);
+$router->get('/admin/schedule/{id}/edit', [ScheduleController::class, 'edit']);
+$router->post('/admin/schedule/{id}', [ScheduleController::class, 'update']);
+$router->post('/admin/schedule/{id}/delete', [ScheduleController::class, 'destroy']);
 
 // Super Admin only: audit log and admin account management
 $router->get('/admin/audit-log', [AuditLogController::class, 'index']);
