@@ -53,6 +53,9 @@ $router->post('/admin/applications/{id}/reject', [AdminEnrollmentController::cla
 // Admin: section management
 $router->get('/admin/sections', [SectionController::class, 'index']);
 $router->post('/admin/sections', [SectionController::class, 'store']);
+$router->get('/admin/sections/{id}/edit', [SectionController::class, 'edit']);
+$router->post('/admin/sections/{id}', [SectionController::class, 'update']);
+$router->post('/admin/sections/{id}/delete', [SectionController::class, 'destroy']);
 
 // Super Admin only: audit log and admin account management
 $router->get('/admin/audit-log', [AuditLogController::class, 'index']);

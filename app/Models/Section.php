@@ -46,4 +46,35 @@ class Section extends Model
             'capacity'    => $capacity,
         ]);
     }
+
+    /**
+     * A single section with its live student count, for the edit/delete
+     * screens (grade_level is intentionally not editable — changing it
+     * after students are assigned would silently orphan the capacity logic).
+     */
+    public function findWithCount(int $id): array|false
+    {
+        $stmt = $this->db->prepare(
+            "SELECT s.*, COUNT(st.id) AS student_count
+             FROM sections s
+             LEFT JOIN students st ON st.section_id = s.id AND st.status = 'approved'
+             WHERE s.id = :id
+             GROUP BY s.id"
+        );
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch();
+    }
+
+    public function updateSection(int $id, string $name, int $capacity): bool
+    {
+        return $this->update($id, [
+            'name'     => $name,
+            'capacity' => $capacity,
+        ]);
+    }
+
+    public function deleteSection(int $id): bool
+    {
+        return $this->delete($id);
+    }
 }

@@ -19,6 +19,16 @@
                     </span>
                 </div>
                 <p class="application-meta"><?= htmlspecialchars($section['grade_level']) ?></p>
+                <div class="section-actions">
+                    <a href="/admin/sections/<?= (int) $section['id'] ?>/edit" class="btn-clay-ghost-small">Edit</a>
+                    <form method="POST" action="/admin/sections/<?= (int) $section['id'] ?>/delete"
+                          onsubmit="return confirm('Delete &quot;<?= htmlspecialchars(addslashes($section['name'])) ?>&quot;? This can\'t be undone.');">
+                        <button type="submit" class="btn-clay-ghost-small btn-delete"
+                            <?= (int) $section['student_count'] > 0 ? 'disabled title="Cannot delete a section with students assigned"' : '' ?>>
+                            Delete
+                        </button>
+                    </form>
+                </div>
             </div>
         <?php endforeach; ?>
     </div>

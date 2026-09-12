@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Config\Database;
 use App\Core\Controller;
 use App\Helpers\Mailer;
 use App\Helpers\Session;
@@ -110,11 +111,27 @@ class AdminEnrollmentController extends Controller
 
         $reviewerId = (int) Auth::id();
 
-        (new Student())->createFromApplication($application, $sectionId);
-        $this->applicationModel->approve($applicationId, $sectionId, $reviewerId);
+        // Creating the student record and marking the application approved must
+        // succeed or fail together — a crash between the two would otherwise
+        // leave a student enrolled with no matching approved application, or
+        // an "approved" application with no actual student record.
+        $pdo = Database::connection();
 
-        (new AuditLog())->record($reviewerId, 'enrollment_application_approved', 'enrollment_applications', $applicationId, "Assigned to section #{$sectionId}");
+        try {
+            $pdo->beginTransaction();
+            (new Student())->createFromApplication($application, $sectionId);
+            $this->applicationModel->approve($applicationId, $sectionId, $reviewerId);
+            (new AuditLog())->record($reviewerId, 'enrollment_application_approved', 'enrollment_applications', $applicationId, "Assigned to section #{$sectionId}");
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            error_log('Approval transaction failed: ' . $e->getMessage());
+            Session::flash('error', 'Something went wrong while approving this application. Please try again.');
+            $this->redirect("/admin/applications/{$applicationId}");
+        }
 
+        // Email is sent only after the transaction has safely committed —
+        // a failed send shouldn't roll back a successful approval.
         if (!empty($application['applicant_email'])) {
             Mailer::send(
                 $application['applicant_email'],

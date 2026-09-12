@@ -887,3 +887,24 @@ form select {
         align-items: stretch;
     }
 }
+
+/* ---------------- Section edit/delete actions ---------------- */
+
+.section-actions {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 1rem;
+}
+
+.section-actions form {
+    margin: 0;
+}
+
+.btn-delete {
+    color: var(--clay-error-text);
+}
+
+.btn-delete:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
