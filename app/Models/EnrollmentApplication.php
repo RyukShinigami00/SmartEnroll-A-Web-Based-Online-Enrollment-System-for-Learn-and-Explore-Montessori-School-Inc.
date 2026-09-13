@@ -126,4 +126,36 @@ class EnrollmentApplication extends Model
         );
         return $stmt->execute(['reason' => $reason, 'reviewer_id' => $reviewerId, 'id' => $id]);
     }
+
+    /**
+     * Counts of applications grouped by status, always including all
+     * three statuses even if a count is zero (useful for chart rendering).
+     */
+    public function countByStatus(): array
+    {
+        $stmt = $this->db->query("SELECT status, COUNT(*) AS total FROM {$this->table} GROUP BY status");
+        $counts = ['pending' => 0, 'approved' => 0, 'rejected' => 0];
+        foreach ($stmt->fetchAll() as $row) {
+            $counts[$row['status']] = (int) $row['total'];
+        }
+        return $counts;
+    }
+
+    /**
+     * Applications submitted per month (last 6 months), for the
+     * enrollment trend on the Reports page.
+     */
+    public function monthlyTrend(int $months = 6): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT DATE_FORMAT(created_at, '%Y-%m') AS month, COUNT(*) AS total
+             FROM {$this->table}
+             WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL :months MONTH)
+             GROUP BY month
+             ORDER BY month"
+        );
+        $stmt->bindValue(':months', $months, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
 }

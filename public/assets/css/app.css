@@ -1001,3 +1001,125 @@ form select {
         font-size: 0.78rem;
     }
 }
+
+/* ---------------- Admin dashboard: metric cards + bar chart ---------------- */
+
+.metric-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.metric-card {
+    background: var(--clay-surface);
+    border-radius: var(--radius-md);
+    padding: 1.4rem 1.2rem;
+    text-align: center;
+    box-shadow:
+        8px 8px 18px var(--clay-shadow-dark-soft),
+        -8px -8px 18px var(--clay-shadow-light);
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.metric-value {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--clay-primary-dark);
+}
+
+.metric-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--clay-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.bar-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.bar-chart-row {
+    display: grid;
+    grid-template-columns: 90px 1fr 40px;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.bar-chart-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--clay-text-muted);
+}
+
+.bar-chart-track {
+    background: var(--clay-bg);
+    border-radius: var(--radius-pill);
+    height: 20px;
+    overflow: hidden;
+    box-shadow:
+        inset 2px 2px 5px var(--clay-shadow-dark-soft),
+        inset -2px -2px 5px var(--clay-shadow-light);
+}
+
+.bar-chart-fill {
+    height: 100%;
+    border-radius: var(--radius-pill);
+    transition: width 0.3s ease;
+}
+
+.bar-pending { background: #D08A63; }
+.bar-approved { background: var(--clay-primary); }
+.bar-rejected { background: #B85C4A; }
+
+.bar-chart-count {
+    font-weight: 800;
+    text-align: right;
+    color: var(--clay-text);
+}
+
+@media (max-width: 720px) {
+    .metric-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .bar-chart-row {
+        grid-template-columns: 70px 1fr 30px;
+    }
+}
+
+/* ---------------- Reports page ---------------- */
+
+.reports-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.reports-panel h2 {
+    color: var(--clay-primary-dark);
+    font-size: 1.15rem;
+}
+
+@media print {
+    .site-header, .no-print, .site-footer {
+        display: none !important;
+    }
+
+    body {
+        background: #fff;
+    }
+
+    .panel {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+}

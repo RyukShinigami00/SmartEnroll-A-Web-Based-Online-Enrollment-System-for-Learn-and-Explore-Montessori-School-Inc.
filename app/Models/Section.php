@@ -77,4 +77,21 @@ class Section extends Model
     {
         return $this->delete($id);
     }
+
+    /**
+     * Total capacity and total currently-enrolled students across all
+     * sections, for the admin dashboard's utilization metric.
+     */
+    public function totals(): array
+    {
+        $stmt = $this->db->query(
+            "SELECT
+                COALESCE(SUM(s.capacity), 0) AS total_capacity,
+                COUNT(DISTINCT st.id) AS total_enrolled,
+                COUNT(DISTINCT s.id) AS total_sections
+             FROM sections s
+             LEFT JOIN students st ON st.section_id = s.id AND st.status = 'approved'"
+        );
+        return $stmt->fetch();
+    }
 }

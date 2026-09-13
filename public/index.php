@@ -12,8 +12,11 @@ use App\Controllers\AuthController;
 use App\Controllers\DashboardController;
 use App\Controllers\EnrollmentController;
 use App\Controllers\HomeController;
+use App\Controllers\ReportController;
 use App\Controllers\ScheduleController;
 use App\Controllers\SectionController;
+use App\Controllers\SettingsController;
+use App\Controllers\StudentController;
 use App\Controllers\StudentScheduleController;
 use App\Core\Router;
 use App\Helpers\Session;
@@ -75,5 +78,19 @@ $router->get('/admin/audit-log', [AuditLogController::class, 'index']);
 $router->get('/admin/users', [AdminUserController::class, 'index']);
 $router->post('/admin/users', [AdminUserController::class, 'store']);
 $router->post('/admin/users/{id}/toggle', [AdminUserController::class, 'toggleActive']);
+
+// Admin: student records
+$router->get('/admin/students', [StudentController::class, 'index']);
+$router->get('/admin/students/export', [StudentController::class, 'exportCsv']);
+$router->get('/admin/students/{id}/edit', [StudentController::class, 'edit']);
+$router->post('/admin/students/{id}', [StudentController::class, 'update']);
+
+// Admin: reports
+$router->get('/admin/reports', [ReportController::class, 'index']);
+
+// Super Admin only: system settings + backup
+$router->get('/admin/settings', [SettingsController::class, 'index']);
+$router->post('/admin/settings', [SettingsController::class, 'update']);
+$router->get('/admin/settings/backup', [SettingsController::class, 'backup']);
 
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
