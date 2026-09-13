@@ -14,6 +14,7 @@ use App\Controllers\EnrollmentController;
 use App\Controllers\HomeController;
 use App\Controllers\ScheduleController;
 use App\Controllers\SectionController;
+use App\Controllers\StudentScheduleController;
 use App\Core\Router;
 use App\Helpers\Session;
 
@@ -44,6 +45,10 @@ $router->get('/admin/dashboard', [DashboardController::class, 'admin']);
 $router->get('/enrollment/apply', [EnrollmentController::class, 'showForm']);
 $router->post('/enrollment/apply', [EnrollmentController::class, 'submit']);
 $router->get('/my-applications', [EnrollmentController::class, 'myApplications']);
+
+// Student: schedule viewing + PDF export
+$router->get('/my-schedule', [StudentScheduleController::class, 'index']);
+$router->get('/my-schedule/{id}/pdf', [StudentScheduleController::class, 'downloadPdf']);
 
 // Admin: enrollment review (admin/super_admin only, role-gated inside the controller)
 $router->get('/admin/applications', [AdminEnrollmentController::class, 'index']);

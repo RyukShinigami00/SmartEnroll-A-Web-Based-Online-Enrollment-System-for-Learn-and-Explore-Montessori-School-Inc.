@@ -908,3 +908,96 @@ form select {
     opacity: 0.45;
     cursor: not-allowed;
 }
+
+/* ---------------- Student: My Schedule ---------------- */
+
+.schedule-block {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--clay-surface-alt);
+}
+
+.schedule-block:last-child {
+    border-bottom: none;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.88rem;
+}
+
+.schedule-table th,
+.schedule-table td {
+    text-align: left;
+    padding: 0.6rem 0.8rem;
+}
+
+.schedule-table thead th {
+    background: var(--clay-primary-soft);
+    color: var(--clay-primary-dark);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+}
+
+.schedule-table tbody tr:nth-child(odd) {
+    background: var(--clay-bg);
+}
+
+.schedule-table tbody tr {
+    border-radius: var(--radius-sm);
+}
+
+.week-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+}
+
+.week-day {
+    background: var(--clay-bg);
+    border-radius: var(--radius-sm);
+    padding: 0.7rem 0.6rem;
+    min-height: 90px;
+    box-shadow:
+        inset 2px 2px 6px var(--clay-shadow-dark-soft),
+        inset -2px -2px 6px var(--clay-shadow-light);
+}
+
+.week-day-label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--clay-text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.week-entry {
+    background: var(--clay-surface);
+    border-radius: 8px;
+    padding: 0.4rem 0.5rem;
+    margin-bottom: 0.4rem;
+    font-size: 0.72rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.week-entry span {
+    color: var(--clay-text-muted);
+    font-weight: 600;
+}
+
+@media (max-width: 720px) {
+    .week-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .schedule-table {
+        font-size: 0.78rem;
+    }
+}
